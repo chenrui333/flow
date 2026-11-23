@@ -4711,16 +4711,16 @@ pub enum MethodAction<CX: ContextFamily = ()> {
 impl<CX: ContextFamily> Clone for MethodAction<CX> {
     fn clone(&self) -> Self {
         match self {
-            MethodAction::CallM(box CallMData {
+            MethodAction::CallM(deref!(CallMData {
                 methodcalltype,
                 return_hint,
                 specialized_callee,
-            }) => MethodAction::CallM(Box::new(CallMData {
+            })) => MethodAction::CallM(Box::new(CallMData {
                 methodcalltype: methodcalltype.clone(),
                 return_hint: return_hint.clone(),
                 specialized_callee: specialized_callee.clone(),
             })),
-            MethodAction::ChainM(box ChainMData {
+            MethodAction::ChainM(deref!(ChainMData {
                 exp_reason,
                 lhs_reason,
                 lhs_expression,
@@ -4728,7 +4728,7 @@ impl<CX: ContextFamily> Clone for MethodAction<CX> {
                 voided_out_collector,
                 return_hint,
                 specialized_callee,
-            }) => MethodAction::ChainM(Box::new(ChainMData {
+            })) => MethodAction::ChainM(Box::new(ChainMData {
                 exp_reason: exp_reason.clone(),
                 lhs_reason: lhs_reason.clone(),
                 lhs_expression: lhs_expression.dupe(),
@@ -4746,19 +4746,19 @@ impl<CX: ContextFamily> PartialEq for MethodAction<CX> {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (
-                MethodAction::CallM(box CallMData {
+                MethodAction::CallM(deref!(CallMData {
                     methodcalltype: a1,
                     return_hint: b1,
                     specialized_callee: c1,
-                }),
-                MethodAction::CallM(box CallMData {
+                })),
+                MethodAction::CallM(deref!(CallMData {
                     methodcalltype: a2,
                     return_hint: b2,
                     specialized_callee: c2,
-                }),
+                })),
             ) => a1 == a2 && b1 == b2 && c1 == c2,
             (
-                MethodAction::ChainM(box ChainMData {
+                MethodAction::ChainM(deref!(ChainMData {
                     exp_reason: a1,
                     lhs_reason: b1,
                     lhs_expression: g1,
@@ -4766,8 +4766,8 @@ impl<CX: ContextFamily> PartialEq for MethodAction<CX> {
                     voided_out_collector: d1,
                     return_hint: e1,
                     specialized_callee: f1,
-                }),
-                MethodAction::ChainM(box ChainMData {
+                })),
+                MethodAction::ChainM(deref!(ChainMData {
                     exp_reason: a2,
                     lhs_reason: b2,
                     lhs_expression: g2,
@@ -4775,7 +4775,7 @@ impl<CX: ContextFamily> PartialEq for MethodAction<CX> {
                     voided_out_collector: d2,
                     return_hint: e2,
                     specialized_callee: f2,
-                }),
+                })),
             ) => a1 == a2 && b1 == b2 && g1 == g2 && c1 == c2 && d1 == d2 && e1 == e2 && f1 == f2,
             (MethodAction::NoMethodAction(a1), MethodAction::NoMethodAction(a2)) => a1 == a2,
             _ => false,
@@ -4789,16 +4789,16 @@ impl<CX: ContextFamily> std::hash::Hash for MethodAction<CX> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         std::mem::discriminant(self).hash(state);
         match self {
-            MethodAction::CallM(box CallMData {
+            MethodAction::CallM(deref!(CallMData {
                 methodcalltype,
                 return_hint,
                 specialized_callee,
-            }) => {
+            })) => {
                 methodcalltype.hash(state);
                 return_hint.hash(state);
                 specialized_callee.hash(state);
             }
-            MethodAction::ChainM(box ChainMData {
+            MethodAction::ChainM(deref!(ChainMData {
                 exp_reason,
                 lhs_reason,
                 lhs_expression,
@@ -4806,7 +4806,7 @@ impl<CX: ContextFamily> std::hash::Hash for MethodAction<CX> {
                 voided_out_collector,
                 return_hint,
                 specialized_callee,
-            }) => {
+            })) => {
                 exp_reason.hash(state);
                 lhs_reason.hash(state);
                 lhs_expression.hash(state);
@@ -4843,19 +4843,19 @@ impl<CX: ContextFamily> Ord for MethodAction<CX> {
         }
         match (self, other) {
             (
-                MethodAction::CallM(box CallMData {
+                MethodAction::CallM(deref!(CallMData {
                     methodcalltype: a1,
                     return_hint: b1,
                     specialized_callee: c1,
-                }),
-                MethodAction::CallM(box CallMData {
+                })),
+                MethodAction::CallM(deref!(CallMData {
                     methodcalltype: a2,
                     return_hint: b2,
                     specialized_callee: c2,
-                }),
+                })),
             ) => a1.cmp(a2).then_with(|| b1.cmp(b2)).then_with(|| c1.cmp(c2)),
             (
-                MethodAction::ChainM(box ChainMData {
+                MethodAction::ChainM(deref!(ChainMData {
                     exp_reason: a1,
                     lhs_reason: b1,
                     lhs_expression: g1,
@@ -4863,8 +4863,8 @@ impl<CX: ContextFamily> Ord for MethodAction<CX> {
                     voided_out_collector: d1,
                     return_hint: e1,
                     specialized_callee: f1,
-                }),
-                MethodAction::ChainM(box ChainMData {
+                })),
+                MethodAction::ChainM(deref!(ChainMData {
                     exp_reason: a2,
                     lhs_reason: b2,
                     lhs_expression: g2,
@@ -4872,7 +4872,7 @@ impl<CX: ContextFamily> Ord for MethodAction<CX> {
                     voided_out_collector: d2,
                     return_hint: e2,
                     specialized_callee: f2,
-                }),
+                })),
             ) => a1
                 .cmp(a2)
                 .then_with(|| b1.cmp(b2))
@@ -4890,17 +4890,17 @@ impl<CX: ContextFamily> Ord for MethodAction<CX> {
 impl<CX: ContextFamily> std::fmt::Debug for MethodAction<CX> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            MethodAction::CallM(box CallMData {
+            MethodAction::CallM(deref!(CallMData {
                 methodcalltype,
                 return_hint,
                 specialized_callee,
-            }) => f
+            })) => f
                 .debug_struct("CallM")
                 .field("methodcalltype", methodcalltype)
                 .field("return_hint", return_hint)
                 .field("specialized_callee", specialized_callee)
                 .finish(),
-            MethodAction::ChainM(box ChainMData {
+            MethodAction::ChainM(deref!(ChainMData {
                 exp_reason,
                 lhs_reason,
                 lhs_expression,
@@ -4908,7 +4908,7 @@ impl<CX: ContextFamily> std::fmt::Debug for MethodAction<CX> {
                 voided_out_collector,
                 return_hint,
                 specialized_callee,
-            }) => f
+            })) => f
                 .debug_struct("ChainM")
                 .field("exp_reason", exp_reason)
                 .field("lhs_reason", lhs_reason)
@@ -4948,16 +4948,16 @@ pub enum OptMethodAction<CX: ContextFamily = ()> {
 impl<CX: ContextFamily> Clone for OptMethodAction<CX> {
     fn clone(&self) -> Self {
         match self {
-            OptMethodAction::OptCallM(box OptCallMData {
+            OptMethodAction::OptCallM(deref!(OptCallMData {
                 opt_methodcalltype,
                 return_hint,
                 specialized_callee,
-            }) => OptMethodAction::OptCallM(Box::new(OptCallMData {
+            })) => OptMethodAction::OptCallM(Box::new(OptCallMData {
                 opt_methodcalltype: opt_methodcalltype.clone(),
                 return_hint: return_hint.clone(),
                 specialized_callee: specialized_callee.clone(),
             })),
-            OptMethodAction::OptChainM(box OptChainMData {
+            OptMethodAction::OptChainM(deref!(OptChainMData {
                 exp_reason,
                 lhs_reason,
                 lhs_expression,
@@ -4965,7 +4965,7 @@ impl<CX: ContextFamily> Clone for OptMethodAction<CX> {
                 voided_out_collector,
                 return_hint,
                 specialized_callee,
-            }) => OptMethodAction::OptChainM(Box::new(OptChainMData {
+            })) => OptMethodAction::OptChainM(Box::new(OptChainMData {
                 exp_reason: exp_reason.clone(),
                 lhs_reason: lhs_reason.clone(),
                 lhs_expression: lhs_expression.dupe(),
@@ -4983,19 +4983,19 @@ impl<CX: ContextFamily> PartialEq for OptMethodAction<CX> {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (
-                OptMethodAction::OptCallM(box OptCallMData {
+                OptMethodAction::OptCallM(deref!(OptCallMData {
                     opt_methodcalltype: a1,
                     return_hint: b1,
                     specialized_callee: c1,
-                }),
-                OptMethodAction::OptCallM(box OptCallMData {
+                })),
+                OptMethodAction::OptCallM(deref!(OptCallMData {
                     opt_methodcalltype: a2,
                     return_hint: b2,
                     specialized_callee: c2,
-                }),
+                })),
             ) => a1 == a2 && b1 == b2 && c1 == c2,
             (
-                OptMethodAction::OptChainM(box OptChainMData {
+                OptMethodAction::OptChainM(deref!(OptChainMData {
                     exp_reason: a1,
                     lhs_reason: b1,
                     lhs_expression: g1,
@@ -5003,8 +5003,8 @@ impl<CX: ContextFamily> PartialEq for OptMethodAction<CX> {
                     voided_out_collector: d1,
                     return_hint: e1,
                     specialized_callee: f1,
-                }),
-                OptMethodAction::OptChainM(box OptChainMData {
+                })),
+                OptMethodAction::OptChainM(deref!(OptChainMData {
                     exp_reason: a2,
                     lhs_reason: b2,
                     lhs_expression: g2,
@@ -5012,7 +5012,7 @@ impl<CX: ContextFamily> PartialEq for OptMethodAction<CX> {
                     voided_out_collector: d2,
                     return_hint: e2,
                     specialized_callee: f2,
-                }),
+                })),
             ) => a1 == a2 && b1 == b2 && g1 == g2 && c1 == c2 && d1 == d2 && e1 == e2 && f1 == f2,
             (OptMethodAction::OptNoMethodAction(a1), OptMethodAction::OptNoMethodAction(a2)) => {
                 a1 == a2
@@ -5028,16 +5028,16 @@ impl<CX: ContextFamily> std::hash::Hash for OptMethodAction<CX> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         std::mem::discriminant(self).hash(state);
         match self {
-            OptMethodAction::OptCallM(box OptCallMData {
+            OptMethodAction::OptCallM(deref!(OptCallMData {
                 opt_methodcalltype,
                 return_hint,
                 specialized_callee,
-            }) => {
+            })) => {
                 opt_methodcalltype.hash(state);
                 return_hint.hash(state);
                 specialized_callee.hash(state);
             }
-            OptMethodAction::OptChainM(box OptChainMData {
+            OptMethodAction::OptChainM(deref!(OptChainMData {
                 exp_reason,
                 lhs_reason,
                 lhs_expression,
@@ -5045,7 +5045,7 @@ impl<CX: ContextFamily> std::hash::Hash for OptMethodAction<CX> {
                 voided_out_collector,
                 return_hint,
                 specialized_callee,
-            }) => {
+            })) => {
                 exp_reason.hash(state);
                 lhs_reason.hash(state);
                 lhs_expression.hash(state);
@@ -5082,19 +5082,19 @@ impl<CX: ContextFamily> Ord for OptMethodAction<CX> {
         }
         match (self, other) {
             (
-                OptMethodAction::OptCallM(box OptCallMData {
+                OptMethodAction::OptCallM(deref!(OptCallMData {
                     opt_methodcalltype: a1,
                     return_hint: b1,
                     specialized_callee: c1,
-                }),
-                OptMethodAction::OptCallM(box OptCallMData {
+                })),
+                OptMethodAction::OptCallM(deref!(OptCallMData {
                     opt_methodcalltype: a2,
                     return_hint: b2,
                     specialized_callee: c2,
-                }),
+                })),
             ) => a1.cmp(a2).then_with(|| b1.cmp(b2)).then_with(|| c1.cmp(c2)),
             (
-                OptMethodAction::OptChainM(box OptChainMData {
+                OptMethodAction::OptChainM(deref!(OptChainMData {
                     exp_reason: a1,
                     lhs_reason: b1,
                     lhs_expression: g1,
@@ -5102,8 +5102,8 @@ impl<CX: ContextFamily> Ord for OptMethodAction<CX> {
                     voided_out_collector: d1,
                     return_hint: e1,
                     specialized_callee: f1,
-                }),
-                OptMethodAction::OptChainM(box OptChainMData {
+                })),
+                OptMethodAction::OptChainM(deref!(OptChainMData {
                     exp_reason: a2,
                     lhs_reason: b2,
                     lhs_expression: g2,
@@ -5111,7 +5111,7 @@ impl<CX: ContextFamily> Ord for OptMethodAction<CX> {
                     voided_out_collector: d2,
                     return_hint: e2,
                     specialized_callee: f2,
-                }),
+                })),
             ) => a1
                 .cmp(a2)
                 .then_with(|| b1.cmp(b2))
@@ -5131,17 +5131,17 @@ impl<CX: ContextFamily> Ord for OptMethodAction<CX> {
 impl<CX: ContextFamily> std::fmt::Debug for OptMethodAction<CX> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            OptMethodAction::OptCallM(box OptCallMData {
+            OptMethodAction::OptCallM(deref!(OptCallMData {
                 opt_methodcalltype,
                 return_hint,
                 specialized_callee,
-            }) => f
+            })) => f
                 .debug_struct("OptCallM")
                 .field("opt_methodcalltype", opt_methodcalltype)
                 .field("return_hint", return_hint)
                 .field("specialized_callee", specialized_callee)
                 .finish(),
-            OptMethodAction::OptChainM(box OptChainMData {
+            OptMethodAction::OptChainM(deref!(OptChainMData {
                 exp_reason,
                 lhs_reason,
                 lhs_expression,
@@ -5149,7 +5149,7 @@ impl<CX: ContextFamily> std::fmt::Debug for OptMethodAction<CX> {
                 voided_out_collector,
                 return_hint,
                 specialized_callee,
-            }) => f
+            })) => f
                 .debug_struct("OptChainM")
                 .field("exp_reason", exp_reason)
                 .field("lhs_reason", lhs_reason)
@@ -6189,20 +6189,20 @@ pub enum ElemAction<CX: ContextFamily = ()> {
 impl<CX: ContextFamily> Clone for ElemAction<CX> {
     fn clone(&self) -> Self {
         match self {
-            ElemAction::ReadElem(box ReadElemData {
+            ElemAction::ReadElem(deref!(ReadElemData {
                 id,
                 from_annot,
                 skip_optional,
                 access_iterables,
                 tout,
-            }) => ElemAction::ReadElem(Box::new(ReadElemData {
+            })) => ElemAction::ReadElem(Box::new(ReadElemData {
                 id: *id,
                 from_annot: *from_annot,
                 skip_optional: *skip_optional,
                 access_iterables: *access_iterables,
                 tout: tout.clone(),
             })),
-            ElemAction::WriteElem(box WriteElemData { tin, tout, mode }) => {
+            ElemAction::WriteElem(deref!(WriteElemData { tin, tout, mode })) => {
                 ElemAction::WriteElem(Box::new(WriteElemData {
                     tin: tin.clone(),
                     tout: tout.clone(),
@@ -6218,32 +6218,32 @@ impl<CX: ContextFamily> PartialEq for ElemAction<CX> {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (
-                ElemAction::ReadElem(box ReadElemData {
+                ElemAction::ReadElem(deref!(ReadElemData {
                     id: a1,
                     from_annot: b1,
                     skip_optional: c1,
                     access_iterables: d1,
                     tout: e1,
-                }),
-                ElemAction::ReadElem(box ReadElemData {
+                })),
+                ElemAction::ReadElem(deref!(ReadElemData {
                     id: a2,
                     from_annot: b2,
                     skip_optional: c2,
                     access_iterables: d2,
                     tout: e2,
-                }),
+                })),
             ) => a1 == a2 && b1 == b2 && c1 == c2 && d1 == d2 && e1 == e2,
             (
-                ElemAction::WriteElem(box WriteElemData {
+                ElemAction::WriteElem(deref!(WriteElemData {
                     tin: a1,
                     tout: b1,
                     mode: c1,
-                }),
-                ElemAction::WriteElem(box WriteElemData {
+                })),
+                ElemAction::WriteElem(deref!(WriteElemData {
                     tin: a2,
                     tout: b2,
                     mode: c2,
-                }),
+                })),
             ) => a1 == a2 && b1 == b2 && c1 == c2,
             (ElemAction::CallElem(a1, b1), ElemAction::CallElem(a2, b2)) => a1 == a2 && b1 == b2,
             _ => false,
@@ -6257,20 +6257,20 @@ impl<CX: ContextFamily> std::hash::Hash for ElemAction<CX> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         std::mem::discriminant(self).hash(state);
         match self {
-            ElemAction::ReadElem(box ReadElemData {
+            ElemAction::ReadElem(deref!(ReadElemData {
                 id,
                 from_annot,
                 skip_optional,
                 access_iterables,
                 tout,
-            }) => {
+            })) => {
                 id.hash(state);
                 from_annot.hash(state);
                 skip_optional.hash(state);
                 access_iterables.hash(state);
                 tout.hash(state);
             }
-            ElemAction::WriteElem(box WriteElemData { tin, tout, mode }) => {
+            ElemAction::WriteElem(deref!(WriteElemData { tin, tout, mode })) => {
                 tin.hash(state);
                 tout.hash(state);
                 mode.hash(state);
@@ -6304,20 +6304,20 @@ impl<CX: ContextFamily> Ord for ElemAction<CX> {
         }
         match (self, other) {
             (
-                ElemAction::ReadElem(box ReadElemData {
+                ElemAction::ReadElem(deref!(ReadElemData {
                     id: a1,
                     from_annot: b1,
                     skip_optional: c1,
                     access_iterables: d1,
                     tout: e1,
-                }),
-                ElemAction::ReadElem(box ReadElemData {
+                })),
+                ElemAction::ReadElem(deref!(ReadElemData {
                     id: a2,
                     from_annot: b2,
                     skip_optional: c2,
                     access_iterables: d2,
                     tout: e2,
-                }),
+                })),
             ) => a1
                 .cmp(a2)
                 .then_with(|| b1.cmp(b2))
@@ -6325,16 +6325,16 @@ impl<CX: ContextFamily> Ord for ElemAction<CX> {
                 .then_with(|| d1.cmp(d2))
                 .then_with(|| e1.cmp(e2)),
             (
-                ElemAction::WriteElem(box WriteElemData {
+                ElemAction::WriteElem(deref!(WriteElemData {
                     tin: a1,
                     tout: b1,
                     mode: c1,
-                }),
-                ElemAction::WriteElem(box WriteElemData {
+                })),
+                ElemAction::WriteElem(deref!(WriteElemData {
                     tin: a2,
                     tout: b2,
                     mode: c2,
-                }),
+                })),
             ) => a1.cmp(a2).then_with(|| b1.cmp(b2)).then_with(|| c1.cmp(c2)),
             (ElemAction::CallElem(a1, b1), ElemAction::CallElem(a2, b2)) => {
                 a1.cmp(a2).then_with(|| b1.cmp(b2))
@@ -6347,13 +6347,13 @@ impl<CX: ContextFamily> Ord for ElemAction<CX> {
 impl<CX: ContextFamily> std::fmt::Debug for ElemAction<CX> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ElemAction::ReadElem(box ReadElemData {
+            ElemAction::ReadElem(deref!(ReadElemData {
                 id,
                 from_annot,
                 skip_optional,
                 access_iterables,
                 tout,
-            }) => f
+            })) => f
                 .debug_struct("ReadElem")
                 .field("id", id)
                 .field("from_annot", from_annot)
@@ -6361,7 +6361,7 @@ impl<CX: ContextFamily> std::fmt::Debug for ElemAction<CX> {
                 .field("access_iterables", access_iterables)
                 .field("tout", tout)
                 .finish(),
-            ElemAction::WriteElem(box WriteElemData { tin, tout, mode }) => f
+            ElemAction::WriteElem(deref!(WriteElemData { tin, tout, mode })) => f
                 .debug_struct("WriteElem")
                 .field("tin", tin)
                 .field("tout", tout)
@@ -8106,14 +8106,14 @@ pub mod properties {
                 ))
             }
             #[rustfmt::skip]
-            TypeInner::DefT(r, deref!(DefTInner::PolyT(box PolyTData {
+            TypeInner::DefT(r, deref!(DefTInner::PolyT(deref!(PolyTData {
                 kind: poly_kind,
                 tparams_loc,
                 tparams,
                 t_out,
                 id,
                 strictness_kind,
-            }))) => {
+            })))) => {
                 let new_t_out =
                     method_to_function_inner(t_out, use_mixed_this, preserve_explicit_method);
                 if Rc::ptr_eq(&new_t_out.0, &t_out.0) {
@@ -8193,7 +8193,7 @@ pub mod nominal {
     impl std::fmt::Display for Id {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
-                Id::UserDefinedOpaqueTypeId(box UserDefinedOpaqueTypeIdData(_aloc_id, name)) => {
+                Id::UserDefinedOpaqueTypeId(deref!(UserDefinedOpaqueTypeIdData(_aloc_id, name))) => {
                     write!(f, "user-defined {} (<opaque>)", name)
                 }
                 Id::InternalEnforceUnionOptimized => write!(f, "InternalEnforceUnionOptimized"),
@@ -9862,7 +9862,7 @@ pub mod react {
     impl<CX: ContextFamily> Clone for Tool<CX> {
         fn clone(&self) -> Self {
             match self {
-                Tool::CreateElement(box CreateElementData {
+                Tool::CreateElement(deref!(CreateElementData {
                     component,
                     jsx_props,
                     tout,
@@ -9871,7 +9871,7 @@ pub mod react {
                     inferred_targs,
                     specialized_component,
                     specialized_props,
-                }) => Tool::CreateElement(Box::new(CreateElementData {
+                })) => Tool::CreateElement(Box::new(CreateElementData {
                     component: component.clone(),
                     jsx_props: jsx_props.clone(),
                     tout: tout.clone(),
@@ -9893,7 +9893,7 @@ pub mod react {
         fn eq(&self, other: &Self) -> bool {
             match (self, other) {
                 (
-                    Tool::CreateElement(box CreateElementData {
+                    Tool::CreateElement(deref!(CreateElementData {
                         component: a1,
                         jsx_props: b1,
                         tout: c1,
@@ -9902,8 +9902,8 @@ pub mod react {
                         inferred_targs: f1,
                         specialized_component: g1,
                         specialized_props: h1,
-                    }),
-                    Tool::CreateElement(box CreateElementData {
+                    })),
+                    Tool::CreateElement(deref!(CreateElementData {
                         component: a2,
                         jsx_props: b2,
                         tout: c2,
@@ -9912,7 +9912,7 @@ pub mod react {
                         inferred_targs: f2,
                         specialized_component: g2,
                         specialized_props: h2,
-                    }),
+                    })),
                 ) => {
                     a1 == a2
                         && b1 == b2
@@ -9936,7 +9936,7 @@ pub mod react {
         fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
             std::mem::discriminant(self).hash(state);
             match self {
-                Tool::CreateElement(box CreateElementData {
+                Tool::CreateElement(deref!(CreateElementData {
                     component,
                     jsx_props,
                     tout,
@@ -9945,7 +9945,7 @@ pub mod react {
                     inferred_targs,
                     specialized_component,
                     specialized_props,
-                }) => {
+                })) => {
                     component.hash(state);
                     jsx_props.hash(state);
                     tout.hash(state);
@@ -9986,7 +9986,7 @@ pub mod react {
             }
             match (self, other) {
                 (
-                    Tool::CreateElement(box CreateElementData {
+                    Tool::CreateElement(deref!(CreateElementData {
                         component: a1,
                         jsx_props: b1,
                         tout: c1,
@@ -9995,8 +9995,8 @@ pub mod react {
                         inferred_targs: f1,
                         specialized_component: g1,
                         specialized_props: h1,
-                    }),
-                    Tool::CreateElement(box CreateElementData {
+                    })),
+                    Tool::CreateElement(deref!(CreateElementData {
                         component: a2,
                         jsx_props: b2,
                         tout: c2,
@@ -10005,7 +10005,7 @@ pub mod react {
                         inferred_targs: f2,
                         specialized_component: g2,
                         specialized_props: h2,
-                    }),
+                    })),
                 ) => a1
                     .cmp(a2)
                     .then_with(|| b1.cmp(b2))
@@ -10025,7 +10025,7 @@ pub mod react {
     impl<CX: ContextFamily> std::fmt::Debug for Tool<CX> {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
-                Tool::CreateElement(box CreateElementData {
+                Tool::CreateElement(deref!(CreateElementData {
                     component,
                     jsx_props,
                     tout,
@@ -10034,7 +10034,7 @@ pub mod react {
                     inferred_targs,
                     specialized_component,
                     specialized_props,
-                }) => f
+                })) => f
                     .debug_struct("CreateElement")
                     .field("component", component)
                     .field("jsx_props", jsx_props)
@@ -12284,7 +12284,7 @@ pub fn hint_unavailable<CX: ContextFamily>() -> LazyHintT<CX> {
 
 pub fn drop_generic(t: Type) -> Type {
     match &*t {
-        TypeInner::GenericT(box GenericTData { bound, .. }) => bound.dupe(),
+        TypeInner::GenericT(deref!(GenericTData { bound, .. })) => bound.dupe(),
         _ => t,
     }
 }
@@ -12350,10 +12350,10 @@ pub fn implicit_instantiation_reference_kind<L: Dupe + PartialEq + Eq + PartialO
     match root_of_use_op(op) {
         VirtualRootUseOp::FunCall(data) => Some(&data.implicit_instantiation_reference),
         VirtualRootUseOp::FunCallMethod(data) => Some(&data.implicit_instantiation_reference),
-        VirtualRootUseOp::JSXCreateElement(box JSXCreateElementData {
+        VirtualRootUseOp::JSXCreateElement(deref!(JSXCreateElementData {
             implicit_instantiation_reference,
             ..
-        }) => Some(implicit_instantiation_reference),
+        })) => Some(implicit_instantiation_reference),
         VirtualRootUseOp::ReactCreateElementCall(data) => {
             Some(&data.implicit_instantiation_reference)
         }
@@ -12625,7 +12625,7 @@ pub fn string_of_use_ctor<CX: ContextFamily>(use_t: &UseT<CX>) -> String {
         UseTInner::GetStaticsT(..) => "GetStaticsT".to_string(),
         UseTInner::HasOwnPropT(..) => "HasOwnPropT".to_string(),
         UseTInner::ImplementsT(..) => "ImplementsT".to_string(),
-        UseTInner::ConcretizeT(box ConcretizeTData { kind, .. }) => match kind {
+        UseTInner::ConcretizeT(deref!(ConcretizeTData { kind, .. })) => match kind {
             ConcretizationKind::ConcretizeForLowerBounds => {
                 "ConcretizeT ConcretizeForLowerBounds".to_string()
             }
@@ -12696,10 +12696,10 @@ pub fn string_of_use_ctor<CX: ContextFamily>(use_t: &UseT<CX>) -> String {
         UseTInner::ReactKitT(..) => "ReactKitT".to_string(),
         UseTInner::ReposLowerT { .. } => "ReposLowerT".to_string(),
         UseTInner::ReposUseT(..) => "ReposUseT".to_string(),
-        UseTInner::ResolveSpreadT(box ResolveSpreadTData {
+        UseTInner::ResolveSpreadT(deref!(ResolveSpreadTData {
             resolve_spread_type,
             ..
-        }) => match &resolve_spread_type.rrt_resolve_to {
+        })) => match &resolve_spread_type.rrt_resolve_to {
             SpreadResolve::ResolveSpreadsToArray { .. } => {
                 "ResolveSpreadT(ResolveSpreadsToArray)".to_string()
             }
@@ -12777,13 +12777,13 @@ pub fn string_of_predicate(pred: &Predicate) -> String {
         PredicateInner::TruthyP => "truthy".to_string(),
         PredicateInner::NullP => "null".to_string(),
         PredicateInner::MaybeP => "null or undefined".to_string(),
-        PredicateInner::SingletonBoolP(box (_, false)) => "false".to_string(),
-        PredicateInner::SingletonBoolP(box (_, true)) => "true".to_string(),
-        PredicateInner::SingletonStrP(box (_, _, value)) => format!("string `{}`", value),
-        PredicateInner::SingletonNumP(box (_, _, NumberLiteral(_, raw))) => {
+        PredicateInner::SingletonBoolP(deref!((_, false))) => "false".to_string(),
+        PredicateInner::SingletonBoolP(deref!((_, true))) => "true".to_string(),
+        PredicateInner::SingletonStrP(deref!((_, _, value))) => format!("string `{}`", value),
+        PredicateInner::SingletonNumP(deref!((_, _, NumberLiteral(_, raw)))) => {
             format!("number `{}`", raw)
         }
-        PredicateInner::SingletonBigIntP(box (_, _, BigIntLiteral(_, raw))) => {
+        PredicateInner::SingletonBigIntP(deref!((_, _, BigIntLiteral(_, raw)))) => {
             format!("bigint `{}`", raw)
         }
         PredicateInner::VoidP => "undefined".to_string(),
@@ -12880,9 +12880,9 @@ pub fn extract_getter_type(t: &Type) -> Type {
 
 pub fn elemt_of_arrtype(arrtype: &ArrType) -> Type {
     match arrtype {
-        ArrType::ArrayAT(box ArrayATData { elem_t, .. })
-        | ArrType::TupleAT(box TupleATData { elem_t, .. }) => elem_t.dupe(),
-        ArrType::ROArrayAT(box ROArrayATData { elem_t, .. }) => elem_t.dupe(),
+        ArrType::ArrayAT(deref!(ArrayATData { elem_t, .. }))
+        | ArrType::TupleAT(deref!(TupleATData { elem_t, .. })) => elem_t.dupe(),
+        ArrType::ROArrayAT(deref!(ROArrayATData { elem_t, .. })) => elem_t.dupe(),
     }
 }
 
@@ -13223,16 +13223,16 @@ pub fn apply_opt_action<CX: ContextFamily>(
     t_out: Tvar,
 ) -> MethodAction<CX> {
     match action {
-        OptMethodAction::OptCallM(box OptCallMData {
+        OptMethodAction::OptCallM(deref!(OptCallMData {
             opt_methodcalltype,
             return_hint,
             specialized_callee,
-        }) => MethodAction::CallM(Box::new(CallMData {
+        })) => MethodAction::CallM(Box::new(CallMData {
             methodcalltype: apply_opt_methodcalltype(opt_methodcalltype, t_out),
             return_hint,
             specialized_callee,
         })),
-        OptMethodAction::OptChainM(box OptChainMData {
+        OptMethodAction::OptChainM(deref!(OptChainMData {
             exp_reason,
             lhs_reason,
             lhs_expression,
@@ -13240,7 +13240,7 @@ pub fn apply_opt_action<CX: ContextFamily>(
             voided_out_collector,
             return_hint,
             specialized_callee,
-        }) => MethodAction::ChainM(Box::new(ChainMData {
+        })) => MethodAction::ChainM(Box::new(ChainMData {
             exp_reason,
             lhs_reason,
             lhs_expression,

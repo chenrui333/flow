@@ -1793,17 +1793,17 @@ pub mod special_cased_functions {
                     if let DefTInner::ArrT(arrtype) = def_t.deref() =>
                 {
                     match arrtype.deref() {
-                        ArrType::ArrayAT(box ArrayATData {
+                        ArrType::ArrayAT(deref!(ArrayATData {
                             elem_t,
                             tuple_view: None,
                             ..
-                        })
-                        | ArrType::ArrayAT(box ArrayATData {
+                        }))
+                        | ArrType::ArrayAT(deref!(ArrayATData {
                             elem_t,
                             tuple_view: Some(type_::TupleView { inexact: true, .. }),
                             ..
-                        })
-                        | ArrType::ROArrayAT(box ROArrayATData { elem_t, .. }) => {
+                        }))
+                        | ArrType::ROArrayAT(deref!(ROArrayATData { elem_t, .. })) => {
                             // Object.assign(o, ...Array<x>) -> Object.assign(o, x)
                             let default_kind = type_::default_obj_assign_kind();
                             assign_from(
@@ -1819,7 +1819,7 @@ pub mod special_cased_functions {
                                 &default_kind,
                             )
                         }
-                        ArrType::TupleAT(box TupleATData { elements, rest, .. }) => {
+                        ArrType::TupleAT(deref!(TupleATData { elements, rest, .. })) => {
                             // Object.assign(o, ...[x,y,z]) -> Object.assign(o, x, y, z)
                             // Object.assign(o, ...[x, ...Array<y>]) -> Object.assign(o, x, y)
                             for (n, elem) in elements.iter().chain(rest).enumerate() {
@@ -1854,10 +1854,10 @@ pub mod special_cased_functions {
                             }
                             Ok(())
                         }
-                        ArrType::ArrayAT(box ArrayATData {
+                        ArrType::ArrayAT(deref!(ArrayATData {
                             tuple_view: Some(tuple_view),
                             ..
-                        }) => {
+                        })) => {
                             // Object.assign(o, ...[x,y,z]) -> Object.assign(o, x, y, z)
                             let ts: Vec<Type> = tuple_view
                                 .elements
@@ -1884,7 +1884,7 @@ pub mod special_cased_functions {
                         }
                     }
                 }
-                (TypeInner::GenericT(box GenericTData { reason, bound, .. }), _) => {
+                (TypeInner::GenericT(deref!(GenericTData { reason, bound, .. })), _) => {
                     let repositioned =
                         flow_js::reposition_with_env(cx, env, reason.loc().dupe(), bound.dupe())?;
                     assign_from(
@@ -2273,7 +2273,7 @@ pub mod type_assertions {
             match t.deref() {
                 TypeInner::DefT(_, def_t) => match def_t.deref() {
                     DefTInner::FunT(_, ft) => out.push(ft.this_t.0.dupe()),
-                    DefTInner::PolyT(box type_::PolyTData { t_out, .. }) => {
+                    DefTInner::PolyT(deref!(type_::PolyTData { t_out, .. })) => {
                         collect_this_params(t_out, out)
                     }
                     _ => {}
@@ -2702,10 +2702,10 @@ pub mod type_assertions {
                     }
                 }
                 TypeInner::AnyT(reason, _)
-                | TypeInner::ImplicitInstantiationTvar(box ImplicitInstantiationTvarData {
+                | TypeInner::ImplicitInstantiationTvar(deref!(ImplicitInstantiationTvarData {
                     reason,
                     ..
-                }) => {
+                })) => {
                     for targ in targs_to_infer {
                         let any = match ti.deref() {
                             TypeInner::AnyT(..) => {
@@ -2802,7 +2802,7 @@ pub mod type_assertions {
             {
                 Ok(())
             }
-            (TypeInner::DefT(_, def_t), _) if matches!(def_t.deref(), DefTInner::ArrT(arr) if matches!(arr.deref(), ArrType::ROArrayAT(box ROArrayATData { .. }) | ArrType::ArrayAT(box ArrayATData { .. }))) => {
+            (TypeInner::DefT(_, def_t), _) if matches!(def_t.deref(), DefTInner::ArrT(arr) if matches!(arr.deref(), ArrType::ROArrayAT(deref!(ROArrayATData { .. })) | ArrType::ArrayAT(deref!(ArrayATData { .. })))) => {
                 Ok(())
             }
             (TypeInner::DefT(_, def_t), Some(prop_name))
@@ -2949,7 +2949,7 @@ pub mod type_assertions {
                     DefTInner::ArrT(arr) => {
                         matches!(
                             arr.deref(),
-                            ArrType::ArrayAT(box ArrayATData { .. }) | ArrType::ROArrayAT(box ROArrayATData { .. })
+                            ArrType::ArrayAT(deref!(ArrayATData { .. })) | ArrType::ROArrayAT(deref!(ROArrayATData { .. }))
                         )
                     }
                     _ => false,
